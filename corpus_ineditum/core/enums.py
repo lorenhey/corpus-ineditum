@@ -1,0 +1,79 @@
+from enum import Enum
+
+
+class TranslationStatus(str, Enum):
+    TRANSLATION_CONFIRMED = "TRANSLATION_CONFIRMED"
+    TRANSLATION_PROBABLE = "TRANSLATION_PROBABLE"
+    TRANSLATION_POSSIBLE = "TRANSLATION_POSSIBLE"
+    NO_TRANSLATION_FOUND = "NO_TRANSLATION_FOUND"
+    STRONG_NO_TRANSLATION_EVIDENCE = "STRONG_NO_TRANSLATION_EVIDENCE"
+    INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
+    UNRESOLVED = "UNRESOLVED"
+
+
+class LanguageConfidence(str, Enum):
+    CERTAIN = "CERTAIN"
+    HIGH = "HIGH"
+    MODERATE = "MODERATE"
+    LOW = "LOW"
+    UNKNOWN = "UNKNOWN"
+
+
+class TranslationDirectness(str, Enum):
+    DIRECT = "DIRECT"
+    INDIRECT = "INDIRECT"
+    UNKNOWN = "UNKNOWN"
+
+
+class TranslationCompleteness(str, Enum):
+    FULL = "FULL"
+    PARTIAL = "PARTIAL"
+    EXCERPT = "EXCERPT"
+    SUMMARY = "SUMMARY"
+    UNKNOWN = "UNKNOWN"
+
+
+class PublicDomainStatus(str, Enum):
+    PUBLIC_DOMAIN_CONFIRMED = "PUBLIC_DOMAIN_CONFIRMED"
+    LIKELY_PUBLIC_DOMAIN = "LIKELY_PUBLIC_DOMAIN"
+    UNCERTAIN = "UNCERTAIN"
+    NOT_PUBLIC_DOMAIN = "NOT_PUBLIC_DOMAIN"
+
+
+class DigitizationQuality(str, Enum):
+    EXCELLENT = "EXCELLENT"  # Searchable OCR, high-res scan, complete
+    GOOD = "GOOD"            # Good scan, some OCR or reliable PDF
+    FAIR = "FAIR"            # Legible scan, no OCR
+    POOR = "POOR"            # Missing pages, hard to read
+    NONE = "NONE"            # Not digitized
+    UNKNOWN = "UNKNOWN"
+
+
+class ObscurityLabel(str, Enum):
+    EXTREMELY_OBSCURE = "EXTREMELY_OBSCURE"
+    VERY_OBSCURE = "VERY_OBSCURE"
+    OBSCURE = "OBSCURE"
+    MODERATELY_KNOWN = "MODERATELY_KNOWN"
+    WELL_KNOWN = "WELL_KNOWN"
+
+
+class WorkType(str, Enum):
+    BOOK = "BOOK"
+    TREATISE = "TREATISE"
+    MONOGRAPH = "MONOGRAPH"
+    PAMPHLET = "PAMPHLET"
+    ESSAY = "ESSAY"
+    MEMOIR = "MEMOIR"
+    PHILOSOPHY = "PHILOSOPHY"
+    LITERATURE = "LITERATURE"
+    SCIENCE = "SCIENCE"
+    TECHNICAL = "TECHNICAL"
+    RELIGION = "RELIGION"
+    POLITICS = "POLITICS"
+    LAW = "LAW"
+    ETHNOGRAPHY = "ETHNOGRAPHY"
+    HISTORY = "HISTORY"
+    LINGUISTICS = "LINGUISTICS"
+    ESOTERICA = "ESOTERICA"
+    MARGINALIA = "MARGINALIA"
+    UNKNOWN = "UNKNOWN"

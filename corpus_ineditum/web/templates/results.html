@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Result - CORPUS INEDITUM</title>
+    <style>
+        body {
+            font-family: "Georgia", serif;
+            background-color: #fdfbf7;
+            color: #2c2c2c;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            font-weight: normal;
+        }
+        .header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .status-box {
+            border: 2px solid #444;
+            padding: 1.5rem;
+            text-align: center;
+            background: #fff;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+        .status-NO_TRANSLATION_FOUND, .status-STRONG_NO_TRANSLATION_EVIDENCE {
+            color: #8b0000;
+            font-weight: bold;
+        }
+        .status-TRANSLATION_POSSIBLE {
+            color: #b8860b;
+        }
+        .evidence-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+        .evidence-table th, .evidence-table td {
+            border: 1px solid #ccc;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .evidence-table th {
+            background-color: #eee;
+        }
+        a { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Audit: {{ work.canonical_title }}</h1>
+        <div><a href="/">&larr; New Audit</a></div>
+    </div>
+    
+    <div class="metadata">
+        <div><strong>Author:</strong> {{ work.author.name if work.author else 'Unknown' }}</div>
+        <div><strong>Target Language:</strong> {{ record.target_language }}</div>
+        <div><strong>Date:</strong> {{ record.audit_date.strftime('%Y-%m-%d') }}</div>
+    </div>
+
+    <div class="status-box">
+        <div>Translation Status</div>
+        <div class="status-{{ record.status.name }}">{{ record.status.value }}</div>
+    </div>
+
+    <p><strong>Coverage Score:</strong> {{ "%.0f"|format(record.search_coverage_score) }}/100</p>
+    <p><strong>Public Domain Assessment:</strong> {{ record.public_domain_status.value }}</p>
+    <p><strong>Conclusion:</strong> {{ record.conclusion_notes }}</p>
+
+    <h2>Evidence Log</h2>
+    <table class="evidence-table">
+        <thead>
+            <tr>
+                <th>Source</th>
+                <th>Query Type</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ev in record.evidences %}
+            <tr>
+                <td>{{ ev.source }}</td>
+                <td>{{ ev.query_type }}</td>
+                <td>{{ ev.result_summary }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

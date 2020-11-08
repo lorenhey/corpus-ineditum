@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Hey"
+  given-names: "Loren"
+title: "CORPUS INEDITUM"
+version: 0.1.0
+date-released: 2026-09-03
+url: "https://github.com/lorenhey/corpus-ineditum"
+abstract: "A bibliographic archaeology instrument for discovering historical works that have never been translated into a target language."

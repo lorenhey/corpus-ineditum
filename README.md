@@ -2,7 +2,12 @@
 
 > Finding a translation is a bibliographic problem. Failing to find one is an epistemological problem.
 
+[![Deploy GitHub Pages](https://github.com/lorenhey/corpus-ineditum/actions/workflows/deploy.yml/badge.svg)](https://github.com/lorenhey/corpus-ineditum/actions/workflows/deploy.yml)
+[![Live Workbench](https://img.shields.io/badge/Live_Workbench-GitHub_Pages-amber.svg)](https://lorenhey.github.io/corpus-ineditum/)
+
 CORPUS INEDITUM is a reproducible bibliographic research instrument designed to locate, investigate, classify, and audit historical works that may never have crossed a language barrier.
+
+**Interactive Web Observatory & Dossier Generator:** [https://lorenhey.github.io/corpus-ineditum/](https://lorenhey.github.io/corpus-ineditum/)
 
 It exists to answer a question that libraries are structurally unequipped to handle: *What old books still exist exclusively in the language in which they were written?*
 

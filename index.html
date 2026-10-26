@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORPUS INEDITUM — Arqueología Bibliográfica y Auditoría de Traducción</title>
+  <meta name="description" content="Instrumento arqueológico y epistémico para localizar, auditar y clasificar obras históricas nunca traducidas a lenguas meta (especialmente castellano).">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📜</text></svg>">
+</head>
+<body>
+
+  <!-- Encabezado de Plataforma -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-sigil">CI</div>
+        <div class="brand-titles">
+          <h1>CORPUS INEDITUM <span class="brand-version">v2.0.0</span></h1>
+          <p class="brand-subtitle">Arqueología bibliográfica de obras que nunca cruzaron una lengua</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <label for="import-jsonl-input" class="btn btn-sm" title="Importar corpus personalizado en formato JSONL">
+          📥 Cargar JSONL
+        </label>
+        <input type="file" id="import-jsonl-input" accept=".jsonl,.txt,.json" style="display: none;">
+        <button id="export-jsonl-btn" class="btn btn-sm" title="Exportar obras filtradas a JSONL">
+          📤 Exportar JSONL
+        </button>
+        <a href="https://github.com/lorenhey/corpus-ineditum" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary">
+          GitHub Repo
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner de Doctrina Epistémica y Domicilio Indeterminado -->
+  <aside class="doctrine-banner">
+    <div class="doctrine-inner">
+      <div>
+        <span class="doctrine-icon">⚖️</span>
+        <strong>Doctrina Epistémica:</strong>
+        <em>La ausencia de evidencia en catálogos no es prueba ontológica de inexistencia.</em>
+        Se opera bajo <span class="doctrine-rule">EVIDENCIA NEGATIVA ROBUSTA</span> y el principio de Domicilio indeterminado:
+        <strong>no se traducen traducciones</strong>, toda versión debe cotejarse directamente sobre la fuente en lengua original.
+      </div>
+    </div>
+  </aside>
+
+  <!-- Layout Principal -->
+  <main class="main-layout">
+
+    <!-- Tarjetas de Métricas Globales -->
+    <section class="metrics-grid">
+      <div class="metric-card accent-amber">
+        <div class="metric-header">
+          <span>Obras Catalogadas</span>
+          <span>📚</span>
+        </div>
+        <div class="metric-val" id="metric-total-works">50</div>
+        <div class="metric-sub">Candidatos históricos auditados</div>
+      </div>
+
+      <div class="metric-card accent-emerald">
+        <div class="metric-header">
+          <span>Evidencia Negativa Robusta</span>
+          <span>🔍</span>
+        </div>
+        <div class="metric-val" id="metric-strong-neg">100%</div>
+        <div class="metric-sub">0 ediciones detectadas en lengua meta</div>
+      </div>
+
+      <div class="metric-card accent-cyan">
+        <div class="metric-header">
+          <span>Dominio Público Estimado</span>
+          <span>🏛️</span>
+        </div>
+        <div class="metric-val" id="metric-pd-ratio">96%</div>
+        <div class="metric-sub">Bajo regla estándar Life + 70 / Life + 80</div>
+      </div>
+
+      <div class="metric-card accent-violet">
+        <div class="metric-header">
+          <span>Cobertura de Catálogos</span>
+          <span>📡</span>
+        </div>
+        <div class="metric-val" id="metric-avg-coverage">100%</div>
+        <div class="metric-sub">Consultas exhaustivas (OL, IA, Wikidata)</div>
+      </div>
+    </section>
+
+    <!-- Espacio de Trabajo Dividido: Explorador vs Inspector de Auditoría -->
+    <div class="workspace-split">
+
+      <!-- Panel Izquierdo: Explorador de Corpus -->
+      <section class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span>📜 Explorador de Corpus Inédito</span>
+          </h2>
+          <span class="badge badge-amber" id="filtered-count-badge">50 / 50</span>
+        </div>
+
+        <div class="panel-body">
+          <!-- Barra de Filtros -->
+          <div class="filter-bar">
+            <div class="search-box">
+              <input type="text" id="search-input" class="search-input" placeholder="Buscar por título, autor (ej. Euler, Luther, Bach)..." autocomplete="off">
+            </div>
+
+            <div class="filter-row">
+              <select id="filter-lang" class="filter-select" title="Idioma original">
+                <option value="ALL">🌐 Cualquier idioma</option>
+                <option value="de">Alemán (de)</option>
+                <option value="la">Latín (la)</option>
+                <option value="fr">Francés (fr)</option>
+                <option value="it">Italiano (it)</option>
+                <option value="en">Inglés (en)</option>
+                <option value="grc">Griego Antiguo (grc)</option>
+              </select>
+
+              <select id="filter-century" class="filter-select" title="Siglo de publicación">
+                <option value="ALL">⏳ Cualquier siglo</option>
+                <option value="16">Siglo XVI (1501-1600)</option>
+                <option value="17">Siglo XVII (1601-1700)</option>
+                <option value="18">Siglo XVIII (1701-1800)</option>
+                <option value="19">Siglo XIX (1801-1900)</option>
+                <option value="20">Siglo XX (1901-2000)</option>
+              </select>
+
+              <select id="filter-status" class="filter-select" title="Estado de auditoría">
+                <option value="ALL">⚖️ Cualquier estado</option>
+                <option value="STRONG_NO_TRANSLATION_EVIDENCE">Evidencia Negativa Robusta</option>
+                <option value="TRANSLATION_POSSIBLE">Cotejo Requerido</option>
+                <option value="NO_TRANSLATION_FOUND">No Hallado (Baja cobertura)</option>
+              </select>
+
+              <select id="filter-pd" class="filter-select" title="Estado de dominio público">
+                <option value="ALL">🏛️ Dominio público: Todos</option>
+                <option value="LIKELY_PUBLIC_DOMAIN">Dominio Público Probable</option>
+                <option value="UNCERTAIN">Incierto / Sin fecha</option>
+              </select>
+
+              <button id="reset-filters-btn" class="btn btn-sm" title="Restablecer filtros">
+                ↺ Limpiar
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabla de Obras -->
+          <div class="table-container">
+            <table class="corpus-table">
+              <thead>
+                <tr>
+                  <th>Título Canónico</th>
+                  <th>Autor / Responsable</th>
+                  <th>Idioma</th>
+                  <th>Año</th>
+                  <th>Dominio</th>
+                </tr>
+              </thead>
+              <tbody id="corpus-table-body">
+                <!-- Filas inyectadas por JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel Derecho: Inspector de Auditoría & Dossier -->
+      <section class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span>🔬 Inspector de Evidencia y Dossier</span>
+          </h2>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="copy-dossier-btn" class="btn btn-sm btn-emerald" title="Copiar dossier en Markdown al portapapeles">
+              📋 Copiar Dossier
+            </button>
+            <button id="download-dossier-btn" class="btn btn-sm btn-primary" title="Descargar informe editorial en Markdown">
+              💾 Descargar .md
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div id="inspector-empty-state" style="display: none; padding: 3rem; text-align: center; color: var(--text-muted);">
+            Seleccioná una obra del listado para inspeccionar su evidencia arqueológica.
+          </div>
+
+          <div id="inspector-content" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Cabecera de la Obra Seleccionada -->
+            <div class="inspector-header-box">
+              <h3 class="work-detail-title" id="work-detail-title">Elements of Algebra</h3>
+              <div class="work-detail-meta">
+                <span id="work-detail-author" style="font-weight: 600; color: #fff;">Leonhard Euler</span>
+                <span>•</span>
+                <span id="work-detail-lang">Alemán (de)</span>
+                <span>•</span>
+                <span id="work-detail-year">1765 d.C.</span>
+                <span class="badge badge-amber" id="work-detail-status-badge">STRONG_NO_TRANSLATION_EVIDENCE</span>
+                <span class="badge badge-emerald" id="work-detail-pd-badge">LIKELY_PUBLIC_DOMAIN</span>
+              </div>
+            </div>
+
+            <!-- Manómetro de Evidencia Epistémica -->
+            <div class="gauge-box">
+              <div class="gauge-header">
+                <strong>Índice de Cobertura de Consulta:</strong>
+                <span style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-amber);" id="gauge-score-val">100%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="gauge-fill" style="width: 100%;"></div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;" id="epistemic-certainty-note">
+                No se identificó ninguna traducción al español en los catálogos consultados. Esta es una evidencia negativa robusta pero no prueba ontológica de inexistencia.
+              </div>
+            </div>
+
+            <!-- Navegación por Pestañas del Inspector -->
+            <nav class="tabs-nav">
+              <button class="tab-btn active-tab" data-tab="tab-evidence">Fuentes y Registros</button>
+              <button class="tab-btn" data-tab="tab-rights">Dominio Público &amp; Obscuridad</button>
+              <button class="tab-btn" data-tab="tab-editorial">Directiva Editorial</button>
+              <button class="tab-btn" data-tab="tab-markdown">Markdown Dossier</button>
+              <button class="tab-btn" data-tab="tab-json">JSON Schema</button>
+            </nav>
+
+            <!-- Pestaña 1: Fuentes y Registros Consultados -->
+            <div id="tab-evidence" class="tab-pane active-pane">
+              <div class="evidence-list" id="evidence-list-container">
+                <!-- Elementos inyectados por JS -->
+              </div>
+            </div>
+
+            <!-- Pestaña 2: Derechos y Obscuridad -->
+            <div id="tab-rights" class="tab-pane">
+              <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div class="metric-card" style="padding: 0.9rem;">
+                  <div class="metric-header">
+                    <span>Evaluación de Dominio Público</span>
+                    <span class="badge badge-emerald" id="pd-rule-badge">Life + 70</span>
+                  </div>
+                  <div id="pd-jurisdiction-text" style="font-size: 0.85rem; color: #fff; line-height: 1.4;">
+                    Autor fallecido hace más de 70 años post mortem auctoris. Libre de gravámenes patrimoniales.
+                  </div>
+                </div>
+
+                <div class="metric-card" style="padding: 0.9rem;">
+                  <div class="metric-header">
+                    <span>Índice de Obscuridad Bibliográfica</span>
+                    <span class="badge badge-cyan" id="obscurity-label-badge">CANONICAL</span>
+                  </div>
+                  <div style="font-size: 1.25rem; font-family: var(--font-mono); font-weight: 700; color: #fff; margin: 0.3rem 0;">
+                    <span id="obscurity-index-val">25</span> / 100
+                  </div>
+                  <div id="obscurity-desc" style="font-size: 0.8rem; color: var(--text-muted);">
+                    Texto clásico con amplia circulación en lengua original pero sin traducción al castellano.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pestaña 3: Directiva Editorial Domicilio Indeterminado -->
+            <div id="tab-editorial" class="tab-pane">
+              <div style="background: var(--bg-inset); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <h4 style="font-family: var(--font-serif); color: var(--text-gold);">Protocolo de Scouting Editorial</h4>
+                <p style="font-size: 0.82rem; color: var(--text-parchment); line-height: 1.5;">
+                  <strong>1. Traducción Directa Exclusiva:</strong> La traducción no puede realizarse a partir de intermediaciones en inglés o francés. Debe contratarse a un traductor filológicamente competente en la lengua original de la obra.
+                </p>
+                <p style="font-size: 0.82rem; color: var(--text-parchment); line-height: 1.5;">
+                  <strong>2. Localización de Edición Príncipe / Testigo:</strong> Recuperar digitalizaciones en Internet Archive, Münchener DigitalisierungsZentrum (MDZ), Gallica o bibliotecas universitarias para cotejar el aparato textual y notas al pie.
+                </p>
+                <p style="font-size: 0.82rem; color: var(--text-parchment); line-height: 1.5;">
+                  <strong>3. Dictamen de Oportunidad:</strong> Obra recomendada para catálogos de ensayo, historia de la ciencia o rescate literario.
+                </p>
+              </div>
+            </div>
+
+            <!-- Pestaña 4: Markdown Dossier -->
+            <div id="tab-markdown" class="tab-pane">
+              <pre class="dossier-code-box" id="markdown-dossier-code"></pre>
+            </div>
+
+            <!-- Pestaña 5: JSON Schema -->
+            <div id="tab-json" class="tab-pane">
+              <pre class="dossier-code-box" id="json-dossier-code"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sección de Auditoría Personalizada: Auditar Cualquier Obra -->
+    <section class="custom-auditor-section">
+      <div class="panel-header" style="background: transparent; border: none; padding: 0 0 1rem 0;">
+        <h2 class="panel-title">
+          <span>🏛️ Simulador Arqueológico — Auditar Obra Personalizada</span>
+        </h2>
+      </div>
+
+      <form id="custom-audit-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="custom-title-input">Título Original de la Obra *</label>
+            <input type="text" id="custom-title-input" class="form-input" placeholder="Ej. Mechanica sive motus scientia analytice exposita" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-author-input">Autor / Creador</label>
+            <input type="text" id="custom-author-input" class="form-input" placeholder="Ej. Leonhard Euler">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-death-year-input">Año de Muerte del Autor (p.m.a.)</label>
+            <input type="number" id="custom-death-year-input" class="form-input" placeholder="Ej. 1783">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-pub-year-input">Año Estimado de Publicación</label>
+            <input type="number" id="custom-pub-year-input" class="form-input" placeholder="Ej. 1736">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-original-lang-input">Idioma Original</label>
+            <select id="custom-original-lang-input" class="form-select">
+              <option value="la">Latín (la)</option>
+              <option value="de">Alemán (de)</option>
+              <option value="fr">Francés (fr)</option>
+              <option value="it">Italiano (it)</option>
+              <option value="grc">Griego Antiguo (grc)</option>
+              <option value="en">Inglés (en)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-target-lang-input">Lengua Meta Auditada</label>
+            <select id="custom-target-lang-input" class="form-select">
+              <option value="es" selected>Español (es)</option>
+              <option value="pt">Portugués (pt)</option>
+              <option value="it">Italiano (it)</option>
+              <option value="en">Inglés (en)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-jurisdiction-select">Jurisdicción de Propiedad Intelectual</label>
+            <select id="custom-jurisdiction-select" class="form-select">
+              <option value="LIFE_70" selected>Life + 70 (Convenio de Berna / Arg / UE)</option>
+              <option value="LIFE_80">Life + 80 (España / Colombia)</option>
+              <option value="US">EE.UU. (Regla previa a 1929)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+          <button type="submit" id="custom-run-audit-btn" class="btn btn-primary">
+            🔬 Ejecutar Auditoría Epistémica y Generar Dossier
+          </button>
+        </div>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Pie de Página -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>CORPUS INEDITUM</strong> • Instrumento de Arqueología Bibliográfica • v2.0.0
+      </div>
+      <div class="footer-doctrine">
+        «No se traducen traducciones» — Principio filológico para la preservación de textos y rescate editorial.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data/corpus-dataset.js"></script>
+  <script src="js/corpus-engine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
